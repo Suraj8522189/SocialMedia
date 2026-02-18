@@ -18,7 +18,7 @@ const __dirname = path.resolve();
 app.use(express.json({ limit: "10mb" }));
 app.use(express.urlencoded({ limit: "10mb", extended: true }));
 
-// ✅ FIXED CORS (Vercel + Localhost)
+// ✅ CORS (Vercel + Localhost + Preflight fix)
 const allowedOrigins = [
   "http://localhost:5173",
   "https://social-media-orpin-five.vercel.app",
@@ -29,13 +29,16 @@ app.use(cors({
     if (!origin || allowedOrigins.includes(origin)) {
       callback(null, true);
     } else {
-      callback(new Error("Not allowed by CORS"));
+      callback(null, false); // ❗ error throw mat karo
     }
   },
   credentials: true,
   methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
   allowedHeaders: ["Content-Type", "Authorization"],
 }));
+
+// ✅ Preflight (OPTIONS) handle
+app.options("*", cors());
 
 // ✅ Cookies
 app.use(cookieParser());
@@ -45,14 +48,11 @@ app.use("/api/auth", authRoutes);
 app.use("/api/messages", messageRoutes);
 app.use("/api/posts", postRoutes);
 
-// ❌ REMOVE this for Render + Vercel setup
+// ❌ Frontend serve mat karo (Vercel handle karega)
 // if (process.env.NODE_ENV === "production") {
 //   app.use(express.static(path.join(__dirname, "../frontend/dist")));
-
 //   app.get("*", (req, res) => {
-//     res.sendFile(
-//       path.join(__dirname, "../frontend", "dist", "index.html")
-//     );
+//     res.sendFile(path.join(__dirname, "../frontend", "dist", "index.html"));
 //   });
 // }
 
