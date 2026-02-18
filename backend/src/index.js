@@ -18,27 +18,43 @@ const __dirname = path.resolve();
 app.use(express.json({ limit: "10mb" }));
 app.use(express.urlencoded({ limit: "10mb", extended: true }));
 
-// Cookies & CORS
+// ✅ FIXED: CORS (Vercel + Localhost allowed)
+const allowedOrigins = [
+  "http://localhost:5173",
+  "https://social-media-orpin-five.vercel.app",
+];
+
 app.use(cors({
-  origin: "https://social-media-orpin-five.vercel.app",
-  credentials: true
+  origin: function (origin, callback) {
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error("Not allowed by CORS"));
+    }
+  },
+  credentials: true,
+  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+  allowedHeaders: ["Content-Type", "Authorization"],
 }));
+
+// ✅ FIXED: cookie parser (auth cookies ke liye)
+app.use(cookieParser());
 
 // Routes
 app.use("/api/auth", authRoutes);
 app.use("/api/messages", messageRoutes);
 app.use("/api/posts", postRoutes);
 
-// Production build
-if (process.env.NODE_ENV === "production") {
-  app.use(express.static(path.join(__dirname, "../frontend/dist")));
+// ❌ REMOVE: Render backend ke liye frontend static serve mat karo
+// if (process.env.NODE_ENV === "production") {
+//   app.use(express.static(path.join(__dirname, "../frontend/dist")));
 
-  app.get("*", (req, res) => {
-    res.sendFile(
-      path.join(__dirname, "../frontend", "dist", "index.html")
-    );
-  });
-}
+//   app.get("*", (req, res) => {
+//     res.sendFile(
+//       path.join(__dirname, "../frontend", "dist", "index.html")
+//     );
+//   });
+// }
 
 // Start server AFTER DB connection
 const startServer = async () => {
