@@ -18,7 +18,7 @@ const __dirname = path.resolve();
 app.use(express.json({ limit: "10mb" }));
 app.use(express.urlencoded({ limit: "10mb", extended: true }));
 
-// ✅ FIXED: CORS (Vercel + Localhost allowed)
+// ✅ FIXED CORS (Vercel + Localhost)
 const allowedOrigins = [
   "http://localhost:5173",
   "https://social-media-orpin-five.vercel.app",
@@ -37,7 +37,7 @@ app.use(cors({
   allowedHeaders: ["Content-Type", "Authorization"],
 }));
 
-// ✅ FIXED: cookie parser (auth cookies ke liye)
+// ✅ Cookies
 app.use(cookieParser());
 
 // Routes
@@ -45,7 +45,7 @@ app.use("/api/auth", authRoutes);
 app.use("/api/messages", messageRoutes);
 app.use("/api/posts", postRoutes);
 
-// ❌ REMOVE: Render backend ke liye frontend static serve mat karo
+// ❌ REMOVE this for Render + Vercel setup
 // if (process.env.NODE_ENV === "production") {
 //   app.use(express.static(path.join(__dirname, "../frontend/dist")));
 
