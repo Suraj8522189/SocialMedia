@@ -12,9 +12,7 @@ const signup = async (req, res) => {
 
   try {
     if (password.length < 6) {
-      return res
-        .status(400)
-        .json({ message: "Password must be at least 6 characters" });
+      return res.status(400).json({ message: "Password must be at least 6 characters" });
     }
 
     const user = await User.findOne({ email });
@@ -23,12 +21,7 @@ const signup = async (req, res) => {
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(password, salt);
 
-    const newUser = new User({
-      fullName,
-      email,
-      password: hashedPassword,
-    });
-
+    const newUser = new User({ fullName, email, password: hashedPassword });
     await newUser.save();
 
     generateToken(newUser._id, res);
@@ -54,14 +47,10 @@ const login = async (req, res) => {
 
   try {
     const user = await User.findOne({ email });
-    if (!user) {
-      return res.status(400).json({ message: "Invalid credentials" });
-    }
+    if (!user) return res.status(400).json({ message: "Invalid credentials" });
 
     const isPasswordCorrect = await bcrypt.compare(password, user.password);
-    if (!isPasswordCorrect) {
-      return res.status(400).json({ message: "Invalid credentials" });
-    }
+    if (!isPasswordCorrect) return res.status(400).json({ message: "Invalid credentials" });
 
     generateToken(user._id, res);
 
@@ -79,18 +68,18 @@ const login = async (req, res) => {
 
 const logout = async (req, res) => {
   try {
-    // ✅ Cookie properly clear karo (token set nahi, empty karo)
+    // ✅ Cookie properly clear
     res.cookie("jwt", "", {
       httpOnly: true,
-      secure: process.env.NODE_ENV === "production", // Render pe true
+      secure: process.env.NODE_ENV === "production",
       sameSite: process.env.NODE_ENV === "production" ? "None" : "Lax",
       maxAge: 0,
     });
 
-    return res.status(200).json({ message: "Logged out successfully" });
+    res.status(200).json({ message: "Logged out successfully" });
   } catch (error) {
     console.log("Error in logout controller", error.message);
-    return res.status(500).json({ message: "Internal Server Error" });
+    res.status(500).json({ message: "Internal Server Error" });
   }
 };
 

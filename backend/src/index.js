@@ -12,49 +12,42 @@ import path from "path";
 dotenv.config();
 
 const PORT = process.env.PORT || 5001;
-const __dirname = path.resolve();
 
 // Body parsers
 app.use(express.json({ limit: "10mb" }));
 app.use(express.urlencoded({ limit: "10mb", extended: true }));
 
-// ✅ CORS (Vercel + Localhost + Preflight fix)
+// ✅ CORS (Local + Vercel)
 const allowedOrigins = [
   "http://localhost:5173",
   "https://social-media-orpin-five.vercel.app",
 ];
 
-app.use(cors({
-  origin: function (origin, callback) {
-    if (!origin || allowedOrigins.includes(origin)) {
-      callback(null, true);
-    } else {
-      callback(null, false); // ❗ error throw mat karo
-    }
-  },
-  credentials: true,
-  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-  allowedHeaders: ["Content-Type", "Authorization"],
-}));
+app.use(
+  cors({
+    origin: function (origin, callback) {
+      if (!origin || allowedOrigins.includes(origin)) {
+        callback(null, true);
+      } else {
+        callback(null, false); // error throw mat karo
+      }
+    },
+    credentials: true, // 🔥 cookies allow
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization"],
+  })
+);
 
-// ✅ Preflight (OPTIONS) handle
+// Preflight
 app.options("*", cors());
 
-// ✅ Cookies
+// Cookies
 app.use(cookieParser());
 
 // Routes
 app.use("/api/auth", authRoutes);
 app.use("/api/messages", messageRoutes);
 app.use("/api/posts", postRoutes);
-
-// ❌ Frontend serve mat karo (Vercel handle karega)
-// if (process.env.NODE_ENV === "production") {
-//   app.use(express.static(path.join(__dirname, "../frontend/dist")));
-//   app.get("*", (req, res) => {
-//     res.sendFile(path.join(__dirname, "../frontend", "dist", "index.html"));
-//   });
-// }
 
 // Start server AFTER DB connection
 const startServer = async () => {
