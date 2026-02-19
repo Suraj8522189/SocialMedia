@@ -5,5 +5,5 @@ export const axiosInstance = axios.create({
     import.meta.env.MODE === "development"
       ? "http://localhost:5001/api"
       : "https://socialmedia-cp10.onrender.com/api",
-  withCredentials: true, // 🔥 cookie ke liye zaroori
+  withCredentials: true, // 🔥 cookies send karne ke liye
 });
