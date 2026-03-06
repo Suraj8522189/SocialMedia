@@ -3,18 +3,17 @@ import { axiosInstance } from "../lib/axios.js";
 import { toast } from "react-hot-toast";
 import { io } from "socket.io-client";
 
-// ❌ API ke liye /api, socket ke liye root URL chahiye
-const BASE_URL = "https://socialmedia-cp10.onrender.com";
+const BASE_URL = "https://socialmedia-cp10.onrender.com/api";
 
 const API_URL =
   import.meta.env.MODE === "development"
     ? "http://localhost:5001/api"
-    : `${BASE_URL}/api`;
+    : BASE_URL;
 
 const SOCKET_URL =
   import.meta.env.MODE === "development"
     ? "http://localhost:5001"
-    : BASE_URL;
+    : "https://socialmedia-cp10.onrender.com";
 
 export const useAuthStore = create((set, get) => ({
   authUser: null,
@@ -69,7 +68,7 @@ export const useAuthStore = create((set, get) => ({
       const res = await axiosInstance.post("/auth/login", data);
       set({ authUser: res.data });
       toast.success("Logged in successfully");
-      get().connectSocket(); // 🔥 login ke baad socket connect
+      get().connectSocket(); 
     } catch (error) {
       toast.error(error.response?.data?.message || "Login failed");
     } finally {
