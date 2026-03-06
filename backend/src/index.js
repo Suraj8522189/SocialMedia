@@ -7,7 +7,6 @@ import { connectDB } from "./lib/db.js";
 import cookieParser from "cookie-parser";
 import cors from "cors";
 import { app, server } from "./lib/socket.js";
-import path from "path";
 
 dotenv.config();
 
@@ -20,7 +19,7 @@ app.use(express.urlencoded({ limit: "10mb", extended: true }));
 // ✅ CORS (Local + Vercel)
 const allowedOrigins = [
   "http://localhost:5173",
-  "https://social-media-orpin-five.vercel.app",
+  "https://social-media-bay-beta.vercel.app"
 ];
 
 app.use(

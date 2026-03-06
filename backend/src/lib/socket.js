@@ -9,14 +9,14 @@ const server = http.createServer(app);
 const userSocketMap = {};
 
 const io = new Server(server, {
-  cors: {
-    origin: [
-      "http://localhost:5173",
-      "https://new-chat-app-mern.netlify.app",
-    ],
-    methods: ["GET", "POST"],
-    credentials: true,
-  },
+cors: {
+  origin: [
+    "http://localhost:5173",
+    "https://social-media-bay-beta.vercel.app",
+  ],
+  methods: ["GET", "POST"],
+  credentials: true,
+}
 });
 
 export function getReceverSocketId(userId) {
