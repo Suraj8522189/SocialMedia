@@ -12,43 +12,33 @@ dotenv.config();
 
 const PORT = process.env.PORT || 5001;
 
-// Body parsers
-app.use(express.json({ limit: "10mb" }));
-app.use(express.urlencoded({ limit: "10mb", extended: true }));
-
-// ✅ CORS (Local + Vercel)
+// ✅ Allowed origins
 const allowedOrigins = [
   "http://localhost:5173",
   "https://social-media-bay-beta.vercel.app"
 ];
 
+// ✅ CORS configuration
 app.use(
   cors({
-    origin: function (origin, callback) {
-      if (!origin || allowedOrigins.includes(origin)) {
-        callback(null, true);
-      } else {
-        callback(null, false); // error throw mat karo
-      }
-    },
-    credentials: true, // 🔥 cookies allow
+    origin: allowedOrigins,
+    credentials: true,
     methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
     allowedHeaders: ["Content-Type", "Authorization"],
   })
 );
 
-// Preflight
-app.options("*", cors());
-
-// Cookies
+// ✅ Middleware
 app.use(cookieParser());
+app.use(express.json({ limit: "10mb" }));
+app.use(express.urlencoded({ limit: "10mb", extended: true }));
 
-// Routes
+// ✅ Routes
 app.use("/api/auth", authRoutes);
 app.use("/api/messages", messageRoutes);
 app.use("/api/posts", postRoutes);
 
-// Start server AFTER DB connection
+// ✅ Start server after DB connection
 const startServer = async () => {
   try {
     await connectDB();
