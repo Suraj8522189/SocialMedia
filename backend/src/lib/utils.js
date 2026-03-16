@@ -7,12 +7,11 @@ export const generateToken = (userId, res) => {
     { expiresIn: "7d" }
   );
 
-  const isProduction = process.env.NODE_ENV === "production";
-
   res.cookie("jwt", token, {
     httpOnly: true,
-    secure: isProduction,
-    sameSite: isProduction ? "none" : "lax",
+    secure: true,          // always true for Render + Vercel
+    sameSite: "none",      // required for cross-site cookie
+    path: "/",             // important
     maxAge: 7 * 24 * 60 * 60 * 1000,
   });
 
