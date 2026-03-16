@@ -15,30 +15,34 @@ const PORT = process.env.PORT || 5001;
 // ✅ Allowed origins
 const allowedOrigins = [
   "http://localhost:5173",
-  "https://social-media-bay-beta.vercel.app"
+  "https://social-media-bay-beta.vercel.app",
 ];
 
 // ✅ CORS configuration
 app.use(
   cors({
-    origin: allowedOrigins,
+    origin: (origin, callback) => {
+      if (!origin || allowedOrigins.includes(origin)) {
+        callback(null, true);
+      } else {
+        callback(new Error("CORS not allowed"));
+      }
+    },
     credentials: true,
-    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-    allowedHeaders: ["Content-Type", "Authorization"],
   })
 );
 
 // ✅ Middleware
-app.use(cookieParser());
 app.use(express.json({ limit: "10mb" }));
-app.use(express.urlencoded({ limit: "10mb", extended: true }));
+app.use(express.urlencoded({ extended: true }));
+app.use(cookieParser());
 
 // ✅ Routes
 app.use("/api/auth", authRoutes);
 app.use("/api/messages", messageRoutes);
 app.use("/api/posts", postRoutes);
 
-// ✅ Start server after DB connection
+// ✅ Start server
 const startServer = async () => {
   try {
     await connectDB();
